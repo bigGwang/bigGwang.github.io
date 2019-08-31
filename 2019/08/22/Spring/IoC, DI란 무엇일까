@@ -22,7 +22,7 @@
         
     </title>
 
-    <link rel="canonical" href="https://biggwang.github.io/2019/08/22/Spring/Spring IoC, DI 개념 파헤치기/">
+    <link rel="canonical" href="https://biggwang.github.io/2019/08/22/Spring/IoC, DI란 무엇일까?/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -43,7 +43,7 @@
 
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/nanumbrushscript.css"> -->
 
-    <link rel="canonical" href="https://biggwang.github.io/2019/08/22/spring/spring ioc, di 개념 파헤치기/">
+    <link rel="canonical" href="https://biggwang.github.io/2019/08/22/spring/ioc, di란 무엇일까">
 
 
 
@@ -404,8 +404,8 @@ Spring 에서는 IoC를 구체적으로 DI라는 방식을통해서 의존성 �
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "Yungwang";
-    var disqus_identifier = "https://biggwang.github.io/2019/08/22/Spring/Spring IoC, DI 개념 파헤치기/";
-    var disqus_url = "https://biggwang.github.io/2019/08/22/Spring/Spring IoC, DI 개념 파헤치기/";
+    var disqus_identifier = "https://biggwang.github.io/2019/08/22/Spring/IoC, DI란 무엇일까?/";
+    var disqus_url = "https://biggwang.github.io/2019/08/22/Spring/IoC, DI란 무엇일까?/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
