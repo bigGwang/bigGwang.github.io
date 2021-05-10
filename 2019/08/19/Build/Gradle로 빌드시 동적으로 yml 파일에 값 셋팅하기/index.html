@@ -18,11 +18,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          Docker MySql 이미지로 개발 DB 환경 구성하기 - 백문이불여일견
+          Gradle로 빌드시 동적으로 yml 파일에 값 셋팅하기 - 백문이불여일견
         
     </title>
 
-    <link rel="canonical" href="https://biggwang.github.io/2019/07/25/Docker/Docker로 개발 DB 환경 구성하기/">
+    <link rel="canonical" href="https://biggwang.github.io/2019/08/19/Build/Gradle로 빌드시 동적으로 yml 파일에 값 셋팅하기/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -43,7 +43,7 @@
 
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/nanumbrushscript.css"> -->
 
-    <link rel="canonical" href="https://biggwang.github.io/2019/07/25/docker/docker로 개발 db 환경 구성하기/">
+    <link rel="canonical" href="https://biggwang.github.io/2019/08/19/build/gradle로 빌드시 동적으로 yml 파일에 값 셋팅하기/">
 
 
 
@@ -96,14 +96,14 @@
                     <div class="post-heading">
                         <div class="tags">
                             
-                              <a class="tag" href="/tags/#Learnning" title="Learnning">Learnning</a>
+                              <a class="tag" href="/tags/#Experience" title="Experience">Experience</a>
                             
                         </div>
-                        <h1>Docker MySql 이미지로 개발 DB 환경 구성하기</h1>
+                        <h1>Gradle로 빌드시 동적으로 yml 파일에 값 셋팅하기</h1>
                         <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by Yungwang Ryu on
-                            2019-07-25
+                            2019-08-19
                         </span>
                     </div>
                 
@@ -220,42 +220,19 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1><span id="docker로-난-무얼-하고-싶었나">Docker로 난 무얼 하고 싶었나??</span></h1>
-<p>환경에 제약 없이 개발 DB를 구성하고 싶었다.<br>
-맥북에서 공부한 내용을 실습하면서 개발하고 개발한 소스 Github에 올리고 집에서는 Github에서 소스를 받아서 하면됬다.<br>
-근데, DB는?? 내가 저장한 데이터 DB 컨텍스트 정보는 환경이 바뀌면 매번 설치하고 데이터 싱크 맞추기 위해 쿼리 만들고 스크립트 돌려야 하나?  게다가 집은 Window PC이다… 개발하기도 전에 환경 구성하는 것 때문에 지친다…</p>
-<p>그러다 문득 Docker! Docker로 이미지 만들고 Docker Hub 에 올려 놓으면 그 짜증나는 환경 구성이 해결 되지 않을까??<br>
-Docker를 왜 쓸까? 했는데 나에게 Docker가 필요해진 경우가 생긴 것이다.</p>
-<h1><span id="하지만-반영되지-않는-db-데이터">하지만 반영되지 않는 DB 데이터</span></h1>
-<p>mysql 을 이미지를 받아 아래 처럼 셋팅 후</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- docker pull mysql:<span class="number">5.7</span> </span><br><span class="line">- docker run -d -p <span class="number">3306</span>:<span class="number">3306</span> -e MYSQL_ROOT_PASSWORD=<span class="number">1111</span> --name ryu mysql:<span class="number">5.7</span></span><br><span class="line">- docker exec -it ryu bash</span><br></pre></td></tr></table></figure>
-<p>아무리 삽질을해도 MySql 컨테이너에서 만든 데이터를 Docker Hub에 Push를 해도 반영이 되지 않았다.  알고보니 Docker에서 데이터를 저장하고 싶으면 Docker Container 외 별도 디렉토리(Volume)에 보관을 해야 한다는 것이다. 아래 블로그에서 도움을 받았다.</p>
-<p><a href="https://joonhwan.github.io/2018-11-14-fix-mysql-volume-share-issue/" rel="external nofollow noopener noreferrer" target="_blank">Docker Volume 개념 및 MySql을 Docker상에서 운용하는 방법</a></p>
-<p>Docker Container 가 삭제 되면 데이터는 보관되지 않고 같이 삭제된다. 즉, DB 데이터가 날라간다…</p>
-<h1><span id="어떻게-데이터를-보관-할까-호스트-마운트">어떻게 데이터를 보관 할까?? 호스트 마운트</span></h1>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker container run -d -p <span class="number">13306</span>:<span class="number">3306</span>     \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=<span class="number">1111</span>         \</span><br><span class="line">-v /Users/ryu/mariadb:/<span class="keyword">var</span>/lib/mysql     \</span><br><span class="line">--name mariadb_local mariadb</span><br></pre></td></tr></table></figure>
-<p>이런식으로 mysql 이미지에 특정 디렉토리에 내 홈 피씨 (현재 맥북) 에 파일을 공유 할 수 있다.<br>
-즉 Mysql 에서 쌓이는 데이터들을 /User/ryu/mariadb 에 가면 파일을 외부 반출 할 수 있는 것이다.</p>
-<p>참고로 삽질을 많이 했었는데 <a href="https://lemontia.tistory.com/740" rel="external nofollow noopener noreferrer" target="_blank">[docker] MariaDB + 로컬에 데이터저장소 연결</a> 에서 도움을 받아 해결 하게 되었다.</p>
-<h1><span id="어-그럼-dump-떠서-파일을-뜨면-어디서도-동일한-환경-이겠는데">어? 그럼 dump 떠서 파일을 뜨면 어디서도 동일한 환경 이겠는데?</span></h1>
-<p>그렇다. 맥북 피씨던 윈도우 피씨던 도커 Mysql 이미지와 덤프 파일만 있으면 동일한 환경에 나만의 개발 DB를 구축 할 수 있다.</p>
-<p>덤프 파일 명령어는 이렇다.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u root -p --all-databases &gt; /<span class="keyword">var</span>/lib/mysql/backup.sql</span><br><span class="line">mysqldump -u root -p ryu &gt; /<span class="keyword">var</span>/lib/mysql/ryu.sql</span><br></pre></td></tr></table></figure>
-<h1><span id="이제-다른-pc에서도-적용해-보자">이제 다른 PC에서도 적용해 보자</span></h1>
-<p>윈도우에서 도커와 볼륨을 마운트 할 때 주의사항은 “c:/” 이런식이 아닌 “/C/” 대소문자 구분해서 작성 해야 한다.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker container run -d -p <span class="number">13306</span>:<span class="number">3306</span> -e MYSQL_ROOT_PASSWORD=<span class="number">1111</span> -v /C/Users/hmsarang/dockerdb:/<span class="keyword">var</span>/lib/mysql --name mariadb_local3 mariadb</span><br></pre></td></tr></table></figure>
-<p>맥에서는 잘 됬는데 윈도우에서는 mariadb에서 /var/lib/mysql 경로에 접근을 못할까?? 해결필요</p>
-<img src="/2019/07/25/Docker/Docker로%20개발%20DB%20환경%20구성하기/docker-error.png">
-<h1><span id="참고">참고</span></h1>
-<ul>
-<li><a href="https://jayden-lee.github.io/post/docker/mysql-install/" rel="external nofollow noopener noreferrer" target="_blank">Docker를 이용한 MySQL 설치 방법</a></li>
-<li><a href="https://nicewoong.github.io/development/2018/03/06/docker-commit-container/" rel="external nofollow noopener noreferrer" target="_blank">Docker(도커) 컨테이너 커밋, 이미지 푸쉬하기</a></li>
-<li><a href="https://www3.ntu.edu.sg/home/ehchua/programming/sql/MySQL_Beginner.html" rel="external nofollow noopener noreferrer" target="_blank">MySQL by Examples for Beginners</a></li>
-<li><a href="https://cjh5414.github.io/mysql-create-user/" rel="external nofollow noopener noreferrer" target="_blank">Mysql 사용자 추가, 제거 및 권한 부여</a></li>
-</ul>
-<h1><span id="기타-명령어">기타 명령어</span></h1>
-<p>컨테이너, 이미지 삭제 관련</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker stop $(docker ps -a -q)</span><br><span class="line">docker rm $(docker ps -a -q)</span><br><span class="line"></span><br><span class="line">docker rmi $(docker images -q)</span><br><span class="line"></span><br><span class="line">docker logs -t container ID</span><br></pre></td></tr></table></figure>
+                <h3><span id="왜-필요했나">왜 필요했나?</span></h3>
+<p>이번에 오픈했던 서비스는 정적 리소스 파일인 css, js, image 들을 CDN을 이용하여 웹 서비스를 제공하고 있습니다.<br>
+하나의 서비스안에 java와 php가 같이 공존하고 있으며 정적 리소스 파일에 변경은 php에서 하고 있습니다. 뒤에 쿼리 스트링 방식으로 날짜시간을 입력하여 적용 된 캐쉬를 무시하고 파일은 반영하기 위함이죠. 하지만 java쪽에서는 여전히 변경되기 전 정적 리소스 파일을 보고 있게 되죠 이를 위해 자바쪽에 참조 하고 있는데 각종 정적 리소스 파일에 대한 timestamp를 변경해줘야 하고 다시 배포해줘야 새로운 정적 리소스 파일을 사용 할 수 있게 됩니다.</p>
+<p>이러한 상황에서 timestamp 값을 yml에 넣고 각 모든 정적 리소스 파일이 참조 할 수 있게 하였고 timestamp 값은 Gradle 빌드시 동적으로 값을 입력 받을수 있게 하였습니다.</p>
+<h3><span id="그래서-어떻게-한-것인가">그래서 어떻게 한 것인가?</span></h3>
+<p>우선 gradle 스크립트입니다.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*build.gradle*/</span></span><br><span class="line">...</span><br><span class="line">project(<span class="string">':config'</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (project.hasProperty(<span class="string">'serverEnv'</span>)) &#123;</span><br><span class="line"></span><br><span class="line">        def timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern(<span class="string">"yyyyMMddHHmmss"</span>))</span><br><span class="line"></span><br><span class="line">        println(timestamp)</span><br><span class="line">        println(<span class="string">"$&#123;rootProject.projectDir&#125;/config/src/main/resources/"</span>)</span><br><span class="line"></span><br><span class="line">        ant.replaceregexp(match: <span class="string">'staticResourceVersion:.*'</span>, replace: <span class="string">"staticResourceVersion: $&#123;timestamp&#125;"</span>, flags: <span class="string">'g'</span>, byline: <span class="keyword">true</span>) &#123;</span><br><span class="line">            fileset(dir: <span class="string">"$&#123;rootProject.projectDir&#125;/config/src/main/resources/"</span>, includes: <span class="string">'application.yml'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>실제 yml 파일에는 이렇게 값이 들어가 있게 되죠</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">staticResourceVersion: <span class="number">20190819174218</span></span><br></pre></td></tr></table></figure>
+<p>이렇게 셋팅한 후에 Gradle 명령어를 입력하면</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; gradle -x -test <span class="symbol">:config</span><span class="symbol">:build</span> -PserverEnv=develop</span><br></pre></td></tr></table></figure>
+<p>Gradle이 빌드 되면서 yml에 값을 입력하게 됩니다.</p>
+<p>이 방법은 정적 리소스 파일을 적용하기 위해 매번 빌드하고 배포해야하는 번거로움이 있습니다.  개선사항으로 생각하고 있으며 remote config 방식을 활용하여 더 편리해진 정적 파일 리소스 적용 방법을 포스팅하도록 하겠습니다.</p>
 
                 
 
@@ -264,12 +241,12 @@ Docker를 왜 쓸까? 했는데 나에게 Docker가 필요해진 경우가 생�
                 <ul class="pager">
                     
                         <li class="previous">
-                            <a href="/2019/07/25/Spock/Spock 으로 Controller 파일 업로드 테스트 해보기/" data-toggle="tooltip" data-placement="top" title="Spock 으로 Controller 파일 업로드 테스트 해보기">&larr; Previous Post</a>
+                            <a href="/2019/08/21/Spring/순환참조와 Lazy/" data-toggle="tooltip" data-placement="top" title="Configuration 클래스에서 @FeignClient 사용시 순환참조 에러 발생하는 이유">&larr; Previous Post</a>
                         </li>
                     
                     
                         <li class="next">
-                            <a href="/2019/07/23/JPA/JPA 쿼리에 대해서/" data-toggle="tooltip" data-placement="top" title="JPA 쿼리에 대해서">Next Post &rarr;</a>
+                            <a href="/2019/08/19/회고/2019년도 2월 회고/" data-toggle="tooltip" data-placement="top" title="2019.02 회고">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -294,17 +271,6 @@ Docker를 왜 쓸까? 했는데 나에게 Docker가 필요해진 경우가 생�
             <!-- Tabe of Content -->
             <!-- Table of Contents -->
 
-    
-      <aside id="sidebar">
-        <div id="toc" class="toc-article">
-        <strong class="toc-title">Contents</strong>
-        
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Docker로 난 무얼 하고 싶었나??</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">하지만 반영되지 않는 DB 데이터</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">어떻게 데이터를 보관 할까?? 호스트 마운트</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">어? 그럼 dump 떠서 파일을 뜨면 어디서도 동일한 환경 이겠는데?</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">이제 다른 PC에서도 적용해 보자</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">참고</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">기타 명령어</span></a></li></ol>
-        
-        </div>
-      </aside>
-    
-
                 
             <!-- Sidebar Container -->
             <div class="
@@ -319,7 +285,7 @@ Docker를 왜 쓸까? 했는데 나에게 Docker가 필요해진 경우가 생�
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
-                          <a class="tag" href="/tags/#Learnning" title="Learnning">Learnning</a>
+                          <a class="tag" href="/tags/#Experience" title="Experience">Experience</a>
                         
                     </div>
                 </section>
@@ -339,8 +305,8 @@ Docker를 왜 쓸까? 했는데 나에게 Docker가 필요해진 경우가 생�
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "Yungwang";
-    var disqus_identifier = "https://biggwang.github.io/2019/07/25/Docker/Docker로 개발 DB 환경 구성하기/";
-    var disqus_url = "https://biggwang.github.io/2019/07/25/Docker/Docker로 개발 DB 환경 구성하기/";
+    var disqus_identifier = "https://biggwang.github.io/2019/08/19/Build/Gradle로 빌드시 동적으로 yml 파일에 값 셋팅하기/";
+    var disqus_url = "https://biggwang.github.io/2019/08/19/Build/Gradle로 빌드시 동적으로 yml 파일에 값 셋팅하기/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
